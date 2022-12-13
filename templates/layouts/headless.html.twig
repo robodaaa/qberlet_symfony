@@ -14,18 +14,6 @@
         {% endblock %}
     </head>
     <body>
-        <div class="w-full h-full flex justify-start items-start">
-            <div class="w-2/12 p-3 h-screen bg-slate-400 hidden lg:flex justify-start items-start">
-                {% include "components/sidebar.html.twig" %}
-            </div>
-            <div class="w-10/12 flex flex-col justify-start items-start">
-                <div class="w-full p-3 flex justify-start items-center bg-slate-100">
-                    header
-                </div>
-                <div class="w-full p-3 flex justify-start items-start">
-                    {% block body %}{% endblock %}
-                </div>
-            </div>
-        </div>
+    {% block body %}{% endblock %}
     </body>
 </html>

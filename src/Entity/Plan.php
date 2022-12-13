@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\PlanRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PlanRepository::class)]
@@ -27,6 +29,14 @@ class Plan
 
     #[ORM\Column]
     private ?bool $active = null;
+
+    #[ORM\OneToMany(mappedBy: 'plan', targetEntity: Gym::class)]
+    private Collection $gyms;
+
+    public function __construct()
+    {
+        $this->gyms = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -89,6 +99,36 @@ class Plan
     public function setActive(bool $active): self
     {
         $this->active = $active;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Gym>
+     */
+    public function getGyms(): Collection
+    {
+        return $this->gyms;
+    }
+
+    public function addGym(Gym $gym): self
+    {
+        if (!$this->gyms->contains($gym)) {
+            $this->gyms->add($gym);
+            $gym->setPlan($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGym(Gym $gym): self
+    {
+        if ($this->gyms->removeElement($gym)) {
+            // set the owning side to null (unless already changed)
+            if ($gym->getPlan() === $this) {
+                $gym->setPlan(null);
+            }
+        }
 
         return $this;
     }

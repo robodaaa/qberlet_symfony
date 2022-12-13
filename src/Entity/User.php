@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -40,6 +42,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $profile_image = null;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: GymUser::class)]
+    private Collection $gymUsers;
+
+    public function __construct()
+    {
+        $this->gymUsers = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -155,6 +165,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setProfileImage(?string $profile_image): self
     {
         $this->profile_image = $profile_image;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GymUser>
+     */
+    public function getGymUsers(): Collection
+    {
+        return $this->gymUsers;
+    }
+
+    public function addGymUser(GymUser $gymUser): self
+    {
+        if (!$this->gymUsers->contains($gymUser)) {
+            $this->gymUsers->add($gymUser);
+            $gymUser->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGymUser(GymUser $gymUser): self
+    {
+        if ($this->gymUsers->removeElement($gymUser)) {
+            // set the owning side to null (unless already changed)
+            if ($gymUser->getUser() === $this) {
+                $gymUser->setUser(null);
+            }
+        }
 
         return $this;
     }
